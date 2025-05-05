@@ -1,4 +1,5 @@
 .env
 venv/
+MyEnvFol/
 __pycache__/
 *.pyc

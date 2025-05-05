@@ -1,0 +1,1268 @@
+##001##LLM and Langchain:-
+
+Here's a **comprehensive comparison** between **LLMs (Language Models)** and **Chat Models** in the context of LangChain (and broadly), including:
+
+* Definitions
+* Key Differences
+* Features
+* Advantages & Disadvantages
+* When to Use Each
+* Real-World Applications
+* Usage in LangChain
+* Code Examples
+
+---
+
+## 🔍 1. What is an LLM vs Chat Model?
+
+### **LLM (Language Model)**:
+
+* A general-purpose model that takes in **plain text** and returns **plain text**.
+* It has **no awareness of roles** (user/system/assistant).
+* Best used for: generation, summarization, translation, classification, etc.
+
+### **Chat Model**:
+
+* A language model **fine-tuned for multi-turn conversation**.
+* Takes in **structured messages** (roles: `user`, `assistant`, `system`).
+* Best used for: chatbots, agents, dialogue systems, tools using memory or functions.
+
+---
+
+## ⚖️ 2. Key Differences
+
+| Feature             | LLM                      | Chat Model                      |
+| ------------------- | ------------------------ | ------------------------------- |
+| Input Format        | Plain text               | List of message objects         |
+| Output Format       | Plain text               | `AIMessage` (with metadata)     |
+| Role Handling       | ❌ No roles               | ✅ Has `user`, `assistant`, etc. |
+| Memory Support      | Limited/manual           | Native support (via LangChain)  |
+| Function Calling    | ❌ No                     | ✅ Yes (OpenAI function calling) |
+| Multi-turn Dialogue | ❌ Harder to manage       | ✅ Built for this                |
+| Use Cases           | Simple tasks, generation | Chatbots, agents, tools         |
+
+---
+
+## ✅ 3. Features Comparison
+
+| Feature                 | LLM                 | Chat Model               |
+| ----------------------- | ------------------- | ------------------------ |
+| Structured Prompting    | ❌ Limited           | ✅ Supports System Roles  |
+| Multi-turn Dialogue     | ❌ Manual Management | ✅ Natural Flow           |
+| Tool/Function Calling   | ❌ Not Supported     | ✅ Supported              |
+| Streaming Responses     | ✅ Yes               | ✅ Yes                    |
+| Integration with Agents | ❌ Rare              | ✅ Built-in via LangChain |
+
+---
+
+## 👍 4. Advantages & Disadvantages
+
+### ✅ LLM (Plain Language Model)
+
+**Advantages:**
+
+* Simpler to use.
+* Faster and lighter for simple tasks.
+* Ideal for one-shot tasks like summarizing or translating.
+
+**Disadvantages:**
+
+* Cannot maintain context in a conversation.
+* No function/tool calling.
+* No roles — less control over persona and behavior.
+
+---
+
+### ✅ Chat Model
+
+**Advantages:**
+
+* Handles roles (system, assistant, user).
+* Supports memory, tools, agents.
+* More control and structure.
+* Best for multi-turn applications and tools.
+
+**Disadvantages:**
+
+* More complex input/output.
+* Slightly heavier and slower.
+* Requires structured formatting.
+
+---
+
+## 📌 5. When to Use Each?
+
+| Use Case                        | Use LLM | Use Chat Model |
+| ------------------------------- | ------- | -------------- |
+| One-off text generation         | ✅       | ❌              |
+| Summarization                   | ✅       | ❌              |
+| Translation                     | ✅       | ❌              |
+| Multi-turn chatbot              | ❌       | ✅              |
+| Agents (tool use, memory, etc.) | ❌       | ✅              |
+| Persona / Role-based behavior   | ❌       | ✅              |
+| Function calling or plugins     | ❌       | ✅              |
+
+---
+
+## 🌍 6. Famous Applications
+
+### **LLM-based Apps**
+
+* Grammarly (grammar correction)
+* DeepL (translation)
+* Jasper (copywriting AI)
+
+### **Chat Model Apps**
+
+* ChatGPT
+* Claude by Anthropic
+* LangChain-powered agents
+* AI Copilots (e.g. GitHub Copilot Chat)
+
+---
+
+## 🛠️ 7. How to Use in LangChain
+
+### 🟡 LLM Usage Example:
+
+```python
+from langchain_openai import OpenAI
+
+llm = OpenAI(model="gpt-4")  # Or "gpt-3.5-turbo-instruct"
+response = llm.invoke("Write a poem about AI.")
+print(response)  # plain string output
+```
+
+---
+
+### 🔵 Chat Model Usage Example:
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage
+
+chat = ChatOpenAI(model="gpt-4")
+messages = [
+    SystemMessage(content="You are a helpful assistant."),
+    HumanMessage(content="What's the capital of India?")
+]
+
+response = chat.invoke(messages)
+print(response.content)
+```
+
+---
+
+## 🧠 8. Agents and Tool Use (Only with Chat Models)
+
+```python
+from langchain.agents import initialize_agent, Tool
+from langchain_openai import ChatOpenAI
+
+tools = [
+    Tool(name="Calculator", func=lambda x: eval(x), description="Useful for math"),
+]
+
+llm = ChatOpenAI(model="gpt-4")
+agent = initialize_agent(tools, llm, agent_type="chat-zero-shot-react-description")
+
+response = agent.run("What is 2 + 2?")
+print(response)
+```
+
+---
+
+## 🗺️ 9. Summary Cheat Sheet
+
+| Task                            | Use LLM? | Use Chat Model? |
+| ------------------------------- | -------- | --------------- |
+| Generate email subject lines    | ✅        | ❌               |
+| Build chatbot with memory       | ❌        | ✅               |
+| Use OpenAI function calling     | ❌        | ✅               |
+| Translate document              | ✅        | ❌               |
+| Summarize meeting notes         | ✅        | ❌               |
+| Power a multi-tool AI assistant | ❌        | ✅               |
+
+---
+
+## ✅ Final Recommendation
+
+* For **simple, one-shot tasks**, use **LLM** — it’s lighter, faster, and easier to manage.
+* For **conversational, interactive, or tool-using tasks**, use **Chat Models** — they’re structured, powerful, and built for real-world AI applications.
+
+---
+
+## 02 ## How to improve result of your chat model
+Absolutely! Here's the full explanation of how to **better control your Chat Model using the `temperature` parameter.
+
+---
+
+## 🔥 What is Temperature?
+
+`temperature` is a key parameter that controls the **randomness** or **creativity** of a language model's responses.
+
+* **Lower values (0.0 – 0.3)** → More **deterministic**, focused, and **predictable** output.
+* **Higher values (0.7 – 1.5+)** → More **random**, creative, and **diverse** responses.
+
+---
+
+## 🎯 How to Use Temperature to Improve Chat Model Behavior
+
+| **Use Case**                          | **Recommended Temperature** | **Effect on Output**                          |
+| ------------------------------------- | --------------------------- | --------------------------------------------- |
+| Factual answers (math, code, facts)   | `0.0 – 0.3`                 | Precise, confident, and accurate              |
+| Balanced response (Q\&A, explanation) | `0.5 – 0.7`                 | Mix of accuracy and flexibility               |
+| Creative writing (stories, jokes)     | `0.9 – 1.2`                 | High creativity, imagination, humor           |
+| Brainstorming / Wild ideas            | `1.5+`                      | Maximum randomness, great for idea generation |
+
+---
+
+## 🛠️ How to Set Temperature in LangChain
+
+```python
+from langchain_openai import ChatOpenAI
+
+# For factual responses
+chat_fact = ChatOpenAI(model="gpt-4", temperature=0.2)
+
+# For balanced, general-purpose answers
+chat_balanced = ChatOpenAI(model="gpt-4", temperature=0.6)
+
+# For creative writing and storytelling
+chat_creative = ChatOpenAI(model="gpt-4", temperature=1.0)
+
+# For brainstorming and high divergence
+chat_random = ChatOpenAI(model="gpt-4", temperature=1.5)
+```
+
+---
+
+## 💡 Use Case Examples
+
+### ✅ Example 1: Fact-Based Answer
+
+```python
+chat = ChatOpenAI(model="gpt-4", temperature=0.2)
+response = chat.invoke("What is the boiling point of water in Celsius?")
+print(response.content)
+```
+
+### ✅ Example 2: Creative Poem
+
+```python
+chat = ChatOpenAI(model="gpt-4", temperature=1.0)
+response = chat.invoke("Write a short poem about a robot who falls in love.")
+print(response.content)
+```
+
+### ✅ Example 3: Brainstorming Ideas
+
+```python
+chat = ChatOpenAI(model="gpt-4", temperature=1.7)
+response = chat.invoke("Give me wild startup ideas involving AI and coffee shops.")
+print(response.content)
+```
+
+---
+
+## ✅ Final Tips for Using Chat Models Effectively
+
+* Use **low temperature** for **precision and reliability**.
+* Use **moderate temperature** for **natural language generation and Q\&A**.
+* Use **high temperature** for **creative applications or idea generation**.
+* Combine `temperature` with **system prompts** to control tone and behavior.
+
+---
+
+
+
+
+## 03 ## Max Completion Token:-
+Great! Let's dive deep into **`max_tokens`** (also sometimes referred to as **`max_completion_tokens`**) — a **critical parameter** 
+for using language models like GPT effectively, especially with APIs or libraries like **OpenAI**, **LangChain**, or **HuggingFace**.
+
+---
+
+## 🧠 What is `max_tokens`?
+
+### ✅ Definition:
+
+`max_tokens` defines the **maximum number of tokens** the model is allowed to **generate in its response** (i.e., the completion/output).
+
+It does **NOT** limit the size of your prompt/input — just the length of the response generated **by the model**.
+
+---
+
+## 🔢 What is a "token"?
+
+* Tokens are chunks of text — typically:
+
+  * 1 token ≈ 0.75 words
+  * 1 token ≈ 4 characters (on average)
+
+| Phrase                  | Approx. Tokens |
+| ----------------------- | -------------- |
+| `"Hello"`               | 1              |
+| `"OpenAI rocks!"`       | 3              |
+| `"The quick brown fox"` | 5              |
+
+---
+
+## 🔐 Why is `max_tokens` important?
+
+1. **Controls output size** – prevents overly long answers.
+2. **Avoids exceeding token limits** – especially important for large models like GPT-4.
+3. **Improves performance and cost control** – more tokens = more compute cost.
+
+---
+
+## 🧱 Token Limits per Model
+
+| Model Name                | Max Total Tokens (Prompt + Completion) |
+| ------------------------- | -------------------------------------- |
+| GPT-3.5 (`gpt-3.5-turbo`) | 16,385 tokens                          |
+| GPT-4 (8k context)        | 8,192 tokens                           |
+| GPT-4 (32k context)       | 32,768 tokens                          |
+
+> So if your input prompt is 1,000 tokens and you set `max_tokens=3000`, the total would be 4000 — within limits.
+
+---
+
+## ⚙️ How to Use `max_tokens`
+
+### ✅ In LangChain:
+
+```python
+from langchain_openai import ChatOpenAI
+
+chat = ChatOpenAI(
+    model="gpt-4",
+    temperature=0.7,
+    max_tokens=500  # Response will be capped at 500 tokens
+)
+response = chat.invoke("Explain quantum computing like I'm 5.")
+print(response.content)
+```
+
+### ✅ In OpenAI API directly:
+
+```python
+import openai
+
+openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Explain gravity"}],
+    max_tokens=200
+)
+```
+
+---
+
+## 🎯 When to Adjust `max_tokens`?
+
+| Situation                                 | Suggested `max_tokens` |
+| ----------------------------------------- | ---------------------- |
+| Short factual Q\&A                        | 50 – 150               |
+| General explanations                      | 200 – 500              |
+| Essays, blogs, or reports                 | 1000 – 2000+           |
+| Creative writing or storytelling          | 500 – 1500             |
+| Tool-using agents or multi-turn reasoning | 1000 – 3000            |
+
+---
+
+## ⚠️ What Happens if You Set It Too Low?
+
+* The model may **cut off mid-sentence**.
+* Incomplete thoughts or results.
+* You may get a `finish_reason = "length"` in the response metadata, which means it ran out of tokens.
+
+---
+
+## ✅ Pro Tip: Combine with `stop` tokens
+
+Use `stop` to define where generation should end — helpful when you want to avoid long or runaway completions **without setting a low `max_tokens`**.
+
+```python
+ChatOpenAI(model="gpt-4", max_tokens=1000, stop=["\nHuman:", "END"])
+```
+
+---
+
+## 🧮 Cost Consideration
+
+* You are billed for **both input + output tokens**.
+* Controlling `max_tokens` helps you **optimize cost** on platforms like OpenAI or Azure OpenAI.
+
+---
+
+## 📌 Summary
+
+| Parameter     | What It Controls                                  |
+| ------------- | ------------------------------------------------- |
+| `max_tokens`  | Max tokens **in the response**                    |
+| `temperature` | Randomness/creativity of the response             |
+| `top_p`       | Alternative to temperature (probability sampling) |
+| `stop`        | Where to end generation manually                  |
+
+---
+
+
+## 03 ##  How to Use Anthropic  Claude:-
+To use **Anthropic's Claude** models (like Claude 1, 2, or 3) for chat-based applications, you typically interact with their **chat completions API** or use a wrapper 
+via libraries like **LangChain**. Here's a full step-by-step breakdown:
+
+---
+
+## 🧠 What is Anthropic?
+
+**Anthropic** is an AI company that created the **Claude** family of language models — alternatives to OpenAI’s GPT models.
+
+Claude models are known for:
+
+* More **aligned** and polite outputs
+* Handling longer context lengths (up to **200k+ tokens** in Claude 3 Opus)
+* Strong at **reasoning**, summarization, and code
+
+---
+
+## 🔑 Step-by-Step Guide to Use Claude (Anthropic API)
+
+### ✅ 1. **Create an Anthropic Account**
+
+* Go to: [https://www.anthropic.com](https://www.anthropic.com)
+* Sign up and generate your **API key**
+
+---
+
+### ✅ 2. **Install the Anthropic SDK**
+
+```bash
+pip install anthropic
+```
+
+---
+
+### ✅ 3. **Basic Example Using Official SDK**
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(
+    api_key="your-anthropic-api-key"
+)
+
+response = client.messages.create(
+    model="claude-3-opus-20240229",  # or "claude-3-sonnet-20240229", etc.
+    max_tokens=300,
+    temperature=0.7,
+    messages=[
+        {"role": "user", "content": "Explain quantum physics in simple terms."}
+    ]
+)
+
+print(response.content[0].text)
+```
+
+---
+
+### ✅ 4. **Using Claude with LangChain**
+
+```bash
+pip install langchain langchain-anthropic
+```
+
+```python
+from langchain_anthropic import ChatAnthropic
+
+chat = ChatAnthropic(
+    model="claude-3-sonnet-20240229",  # or claude-3-opus, etc.
+    anthropic_api_key="your-anthropic-api-key",
+    temperature=0.5,
+    max_tokens=500
+)
+
+response = chat.invoke("What's the difference between Claude and ChatGPT?")
+print(response.content)
+```
+
+---
+
+## 💡 Claude Chat Format (Important!)
+
+Claude uses **special delimiters**:
+
+```txt
+Human: Hello, who are you?
+Assistant: I’m Claude, a helpful AI assistant.
+```
+
+But with SDK and LangChain, this formatting is **handled for you**.
+
+---
+
+## 🎯 Claude Model Options
+
+| Model Name                 | Description                            |
+| -------------------------- | -------------------------------------- |
+| `claude-3-opus-20240229`   | Most powerful (similar to GPT-4-Turbo) |
+| `claude-3-sonnet-20240229` | Mid-tier, fast + capable               |
+| `claude-3-haiku-20240307`  | Lightweight, fast and cheap            |
+
+---
+
+## 🛠 Common Parameters
+
+| Param         | Description                             |
+| ------------- | --------------------------------------- |
+| `model`       | Model version                           |
+| `max_tokens`  | Max tokens to generate in response      |
+| `temperature` | Creativity level                        |
+| `messages`    | List of `user` and `assistant` messages |
+
+---
+
+## 📚 Example Use Cases
+
+| Use Case               | Model       | Notes                            |
+| ---------------------- | ----------- | -------------------------------- |
+| Chatbots               | Sonnet      | Fast and capable                 |
+| Research assistants    | Opus        | Deep reasoning, long documents   |
+| Real-time feedback     | Haiku       | Very fast, lightweight tasks     |
+| Document summarization | Opus/Sonnet | Handles 100k+ tokens efficiently |
+
+---
+
+## 🔒 Environment Variable Setup (Best Practice)
+
+Put your key in `.env`:
+
+```env
+ANTHROPIC_API_KEY=your-key-here
+```
+
+Then access it in code:
+
+```python
+import os
+from langchain_anthropic import ChatAnthropic
+
+chat = ChatAnthropic(
+    model="claude-3-haiku-20240307",
+    anthropic_api_key=os.getenv("ANTHROPIC_API_KEY")
+)
+```
+
+---
+
+## ✅ Summary
+
+| Feature              | Claude (Anthropic)                                               |
+| -------------------- | ---------------------------------------------------------------- |
+| Best for             | Long docs, polite AI, structured output                          |
+| API available?       | ✅ Yes – [https://docs.anthropic.com](https://docs.anthropic.com) |
+| LangChain supported? | ✅ Yes                                                            |
+| Open Source?         | ❌ Proprietary                                                    |
+| Output style         | Conversational, clear, less hallucination                        |
+
+---
+
+
+## 04 ## How To Use Google GeminiAI:-
+To use **Google Gemini AI** (formerly Bard) in your Python apps or LangChain, you can access it through the 
+**Google Generative AI SDK**, which allows you to interact with models like **Gemini 1.5 Pro**.
+
+---
+
+## ✅ Step-by-Step: How to Use Google Gemini AI (Gemini Pro)
+
+### 🔹 1. **Get API Access**
+
+* Visit: [https://makersuite.google.com/app](https://makersuite.google.com/app)
+* Sign in with your Google account.
+* Get your **API Key** from:
+  👉 [https://ai.google.dev](https://ai.google.dev)
+
+---
+
+### 🔹 2. **Install the SDK**
+
+```bash
+pip install google-generativeai
+```
+
+---
+
+### 🔹 3. **Basic Example Using Gemini Pro**
+
+```python
+import google.generativeai as genai
+
+genai.configure(api_key="your-gemini-api-key")
+
+model = genai.GenerativeModel("gemini-pro")
+
+response = model.generate_content("What is the capital of India?")
+print(response.text)
+```
+
+---
+
+### 🔹 4. **Best Practice with .env File**
+
+```python
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+model = genai.GenerativeModel("gemini-pro")
+response = model.generate_content("What is the capital of India?")
+print(response.text)
+```
+
+`.env` file:
+
+```
+GEMINI_API_KEY=your-api-key-here
+```
+
+---
+
+## ✅ Optional: Use Gemini in LangChain
+
+LangChain recently added support for Gemini too.
+
+```bash
+pip install langchain langchain-google-genai
+```
+
+```python
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=os.getenv("GEMINI_API_KEY"))
+response = llm.invoke("What is the capital of India?")
+print(response.content)
+```
+
+---
+
+## 🤖 Available Models
+
+| Model               | Type         | Use Case                       |
+| ------------------- | ------------ | ------------------------------ |
+| `gemini-pro`        | Text only    | Chat, summarization, reasoning |
+| `gemini-pro-vision` | Text + image | Multimodal input support       |
+
+---
+
+## 🎯 Use Case Examples
+
+* ✅ Chatbots & Q\&A
+* ✅ Document summarization
+* ✅ Image + text analysis (`gemini-pro-vision`)
+* ✅ Reasoning and coding
+
+---
+
+## 05 ## OpenSouce AI Models:-
+
+Absolutely! Here's an extended version of the summary that includes:
+
+1. A clearer **definition** of open-source AI models
+2. **Why** we should use them
+3. **When** they are most useful
+
+---
+
+## 📖 What Are Open-Source AI Models?
+
+**Open-source AI models** are artificial intelligence systems whose code, weights, and architecture are **freely available to the public**. This means anyone can:
+
+* **Inspect** how the model works
+* **Modify or improve** it
+* **Deploy it anywhere**, from a laptop to a server
+
+These models are typically shared under licenses that promote transparency, collaboration, and innovation (e.g. Apache, MIT, GPL).
+
+---
+
+## 💡 Why Use Open-Source Models?
+
+Here are the key benefits of using open-source models:
+
+| Benefit               | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| **Full Control**      | You control how and where the model is used – no vendor lock-in.      |
+| **Data Privacy**      | Run models locally to ensure sensitive data never leaves your system. |
+| **Cost Savings**      | No API usage costs – ideal for startups, researchers, and developers. |
+| **Customization**     | You can fine-tune models for your specific domain or task.            |
+| **Transparency**      | Inspect what the model is doing (no "black box").                     |
+| **Community Support** | Constant updates and tools from an active developer ecosystem.        |
+
+---
+
+## 🧭 When Should You Use Open-Source Models?
+
+You should consider open-source models when:
+
+* ✅ **You want to avoid cloud costs** (e.g., using GPT-4 can get expensive).
+* ✅ **You need full control over the model behavior or tuning**.
+* ✅ **You’re building for edge devices or private environments**.
+* ✅ **Data privacy is critical** (e.g., legal, medical, finance applications).
+* ✅ **You’re experimenting or researching** and need flexible access.
+
+---
+
+## ✅ Summary: Open vs Closed Source AI
+
+| Feature            | Open-Source                    | Closed-Source             |
+| ------------------ | ------------------------------ | ------------------------- |
+| **Access**         | Free & open                    | Paid & proprietary        |
+| **Customizable**   | Yes (fine-tune, retrain, etc.) | Limited                   |
+| **Infrastructure** | Run anywhere                   | Run on provider's servers |
+| **Transparency**   | Full (open weights & code)     | None (black box)          |
+| **Community**      | Open community                 | Centralized control       |
+
+---
+
+# Campusx:
+Great! You’ve shared screenshots from a tutorial on open-source AI models. Let me extract the key content shown in the images and present it in a clean, structured format. Here's a detailed summary based on the images you've uploaded:
+
+---
+
+### 📖 **Open Source AI Models**
+
+#### ✅ **Definition**
+
+Open-source language models are **freely available AI models** that can be:
+
+* **Downloaded**
+* **Modified**
+* **Fine-tuned**
+* **Deployed** without restrictions from a central provider
+
+They offer full **control and customization**, unlike **closed-source models** like:
+
+* OpenAI’s GPT-4
+* Anthropic’s Claude
+* Google’s Gemini
+
+---
+
+### 📊 **Comparison: Open Source vs Closed Source Models**
+
+| Feature           | Open-Source Models                              | Closed-Source Models                            |
+| ----------------- | ----------------------------------------------- | ----------------------------------------------- |
+| **Cost**          | Free to use (no API costs)                      | Paid API usage (e.g., OpenAI charges per token) |
+| **Control**       | Modify, fine-tune, and deploy anywhere          | Locked to provider's infrastructure             |
+| **Data Privacy**  | Runs locally (no data sent to external servers) | Sends queries to provider's servers             |
+| **Customization** | Fine-tune on specific datasets                  | Usually no access to fine-tuning                |
+| **Deployment**    | On-premise or cloud                             | Must use vendor’s API                           |
+
+---
+
+### 📌 **Famous Open Source Models**
+
+| Model           | Developer  | Parameters      | Use Case                             |
+| --------------- | ---------- | --------------- | ------------------------------------ |
+| LLaMA 2         | Meta AI    | 7B - 70B        | General-purpose text generation      |
+| Mistral 7B      | Mistral AI | 7B              | Efficient & fast responses           |
+| Mistral Mixtral | Mistral AI | 12.9B (Mixture) | Small-scale model, better than LLaMA |
+
+---
+
+### 🌐 **Where to Find Open Source Models**
+
+* **Hugging Face**: The largest repository of open-source LLMs
+  🔗 [huggingface.co/models](https://huggingface.co/models)
+
+---
+
+### 🧰 **Ways to Use Open Source Models**
+
+```
+                   +---------------------+
+                   | Open-Source Models  |
+                   +---------------------+
+                     /               \
+                    /                 \
+   +------------------------+   +------------------+
+   | Using HF Inference API |   | Running Locally  |
+   +------------------------+   +------------------+
+```
+
+---
+
+
+## 006 ## Embeding:-
+Embeddings are a cornerstone of modern machine learning, enabling the transformation of complex data into lower-dimensional 
+vector spaces that preserve semantic relationships. Here's an in-depth exploration of embedding models, covering key topics:
+
+---
+
+## 1. What Are Embeddings?
+
+Embeddings are numerical representations of data—such as words, images, or users—mapped into a continuous vector space.
+ This transformation allows machine learning models to process and analyze high-dimensional data efficiently by capturing semantic or contextual similarities between data points. ([Wikipedia][1], [Couchbase][2])
+
+---
+
+## 2. Types of Embeddings
+
+### a. **Word Embeddings**
+
+Represent words in a vector space, capturing semantic relationships. Examples include:
+
+* **Word2Vec**: Uses neural networks to learn word associations.
+* **GloVe**: Combines global word co-occurrence statistics.
+* **fastText**: Considers subword information for better handling of rare words.
+
+### b. **Sentence and Document Embeddings**
+
+Extend word embeddings to larger text units. Examples:
+
+* **Doc2Vec**: Generates document-level embeddings.
+* **Sentence-BERT**: Applies BERT for sentence-level embeddings.([Wikipedia][3])
+
+### c. **Image Embeddings**
+
+Map images into vector spaces using convolutional neural networks (CNNs), enabling tasks like image retrieval and classification.([Kolena][4])
+
+### d. **Graph Embeddings**
+
+Represent nodes, edges, or entire graphs in vector spaces, preserving structural information.
+
+### e. **Multimodal Embeddings**
+
+Integrate multiple data types (e.g., text and images) into a unified embedding space, facilitating tasks like image captioning.
+
+---
+
+## 3. Popular Embedding Models
+
+* **Word2Vec**: Captures word contexts using skip-gram or CBOW architectures.
+* **GloVe**: Generates embeddings by factorizing word co-occurrence matrices.
+* **fastText**: Enhances word embeddings with subword information.
+* **BERT**: Provides contextual embeddings for words in sentences.
+* **Sentence-BERT**: Optimizes BERT for producing sentence embeddings.
+* **ResNet**: Extracts image features for embeddings.
+* **Node2Vec**: Generates graph embeddings through random walks.([Wikipedia][3], [arXiv][5])
+
+---
+
+## 4. Applications of Embeddings
+
+* **Natural Language Processing (NLP)**: Sentiment analysis, machine translation, and question answering.
+* **Computer Vision**: Image classification, object detection, and facial recognition.
+* **Recommendation Systems**: Personalized content suggestions based on user-item embeddings.
+* **Information Retrieval**: Enhancing search engines with semantic understanding.
+* **Healthcare**: Analyzing patient records and medical images.([Wikipedia][6])
+
+---
+
+## 5. Embedding Techniques
+
+* **Neural Networks**: Learn embeddings through supervised or unsupervised training.
+* **Matrix Factorization**: Decomposes large matrices (e.g., user-item interactions) into latent factors.
+* **Autoencoders**: Compress data into lower-dimensional embeddings and reconstruct inputs.([Medium][7])
+
+---
+
+## 6. Evaluation of Embeddings
+
+* **Intrinsic Evaluation**: Measures embedding quality using tasks like word similarity.
+* **Extrinsic Evaluation**: Assesses embeddings based on performance in downstream tasks.
+
+---
+
+## 7. Challenges and Considerations
+
+* **Bias in Embeddings**: Pre-trained embeddings may capture societal biases present in training data.
+* **Dimensionality Selection**: Choosing the appropriate vector size is crucial for performance.
+* **Interpretability**: Understanding what each dimension represents can be challenging.([Wikipedia][6])
+
+---
+
+## 8. Tools and Libraries
+
+* **Gensim**: Efficient implementations of Word2Vec and Doc2Vec.
+* **TensorFlow and PyTorch**: Frameworks for building custom embedding models.
+* **Hugging Face Transformers**: Access to pre-trained models like BERT and GPT.
+
+---
+
+## 9. Future Directions
+
+* **Contextual Embeddings**: Developing models that capture dynamic meanings based on context.
+* **Multilingual Embeddings**: Creating embeddings that bridge multiple languages.
+* **Real-time Embedding Updates**: Adapting embeddings on-the-fly as new data arrives.([modular.com][8], [WIRED][9])
+
+---
+
+## 10. Ethical Implications
+
+* **Bias Mitigation**: Implementing techniques to reduce unwanted biases in embeddings.
+* **Privacy Concerns**: Ensuring embeddings do not inadvertently expose sensitive information.
+
+---
+
+Embeddings are integral to numerous machine learning applications, providing a means to represent complex data in a 
+form amenable to analysis and prediction. Understanding their types, applications, and challenges is essential for leveraging their full potential in various domains.
+
+Example:- How to use Embedding  for documents
+
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import HumanMessage
+from langchain.chains import RetrievalQA
+
+# Sample documents
+documents = [
+    "Python is a high-level programming language.",
+    "Paris is the capital of France.",
+    "The moon orbits the Earth.",
+    "Football is a popular sport."
+]
+
+# Step 1: Create embeddings
+embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+# Step 2: Create FAISS vector store
+faiss_index = FAISS.from_texts(documents, embedding=embedding_model)
+
+# Step 3: Get user query
+query = input("Enter your question: ")
+
+# Step 4: Retrieve relevant documents
+retriever = faiss_index.as_retriever()
+relevant_docs = retriever.get_relevant_documents(query)
+
+# Step 5: Build prompt from relevant content
+context = "\n".join([doc.page_content for doc in relevant_docs])
+prompt = f"""Use the following context to answer the question.
+
+Context:
+{context}
+
+Question: {query}
+"""
+
+# Step 6: Use LLM (you can plug in HuggingFace or OpenAI)
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+
+# Step 7: Invoke the model
+response = llm.invoke([HumanMessage(content=prompt)])
+
+print("Answer:", response.content)
+
+
+
+## 07 ## All About Prompts:-
+Great! Let’s break down everything you asked in a clear and structured way. This will cover the 
+**foundations of prompting**, types of prompts, professional practices, and how to use prompts effectively with **LLMs (like GPT)**.
+---
+
+## 🧠 What is a Prompt?
+
+A **prompt** is any input you send to an LLM (Large Language Model) to get a response. It can be a question, instruction, task, or context.
+
+### Example:
+
+```text
+"Summarize this article: Climate change is affecting global food security..."
+```
+
+---
+
+## 🔤 Types of Prompts
+
+### 1. **Textual Prompt**
+
+* Pure text input (most common).
+* The input is just natural language.
+
+✅ Example:
+
+```text
+"Translate this to French: Hello, how are you?"
+```
+
+### 2. **Multimodal Prompt**
+
+* Combines **text + image/audio/video**.
+* Used with **multimodal LLMs** like GPT-4 Turbo with Vision.
+
+✅ Example:
+
+> (Image of a graph)
+> Prompt: "Explain what this graph says about global warming."
+
+---
+
+## 📌 Static vs Dynamic Prompts
+
+### 🔹 Static Prompt
+
+* Hardcoded, fixed text.
+* Does not change based on context or input.
+
+✅ Example:
+
+```python
+prompt = "Summarize the following text: Climate change is real and urgent..."
+```
+
+### 🔹 Dynamic Prompt
+
+* Uses variables or user input to generate the prompt.
+* Often built using `.format()` or templates.
+
+✅ Example:
+
+```python
+template = "Summarize the following topic: {topic}"
+prompt = template.format(topic="Artificial Intelligence")
+```
+
+---
+
+## 🧰 Why Use Template-Based Prompts?
+
+Using templates (like in a dictionary or external file) is better than just `.format()` in-line:
+
+### ✅ Benefits:
+
+* Reusability: One template, many inputs.
+* Organization: Easier to manage in large apps.
+* Clean code: Business logic stays separate from prompt logic.
+* Scalability: You can load prompts from a database, YAML, or JSON.
+
+---
+
+## 💼 How Professionals Use Prompts
+
+1. **Prompt Libraries or Template Managers**
+
+   * Store prompts in separate `.py`, `.json`, or `.yaml` files.
+   * Example libraries: LangChain PromptTemplate, Guidance, PromptLayer.
+
+2. **Prompt Engineering Best Practices**
+
+   * Be clear and specific.
+   * Use few-shot examples if needed.
+   * Include instructions like “respond in bullet points”.
+
+3. **Chain-of-Thought (CoT) Prompting**
+
+   * Ask the model to "think step-by-step".
+   * Improves reasoning tasks.
+
+4. **Tool + Prompt Combo**
+
+   * LLMs integrated with tools (e.g., web search, code execution).
+   * Prompt provides instructions; tool provides capabilities.
+
+---
+
+## 🔗 Prompting with LLMs (LangChain / OpenAI)
+
+You often use prompts in conjunction with:
+
+* `ChatOpenAI()` from LangChain
+* `PromptTemplate` class
+* Prompt + Memory + Chains
+
+✅ Example with LangChain:
+
+```python
+from langchain.prompts import PromptTemplate
+
+template = PromptTemplate.from_template("Summarize: {text}")
+prompt = template.format(text="AI is changing the world...")
+
+response = model.invoke(prompt)
+```
+
+---
+
+## 🧠 Other Important Prompting Topics
+
+| Concept                   | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| **Few-shot prompting**    | Provide examples in prompt.                          |
+| **Zero-shot prompting**   | Give only the task, no examples.                     |
+| **System vs user prompt** | System prompt sets behavior, user prompt gives task. |
+| **Prompt Chaining**       | Use one prompt’s output as input for another.        |
+| **Evaluation**            | Testing prompt quality systematically.               |
+| **Guardrails**            | Adding constraints to model responses.               |
+
+---
+
+
+##08## Messages:-
+Perfect — let’s dive into the **message types** used in Large Language Model (LLM) APIs like **OpenAI’s Chat API** and frameworks
+ like **LangChain**.
+
+Understanding these message roles is key to controlling how an AI model behaves in a **chat-like context**.
+
+---
+
+## 💬 What Are Messages in LLMs?
+
+Messages are the building blocks of a conversation with an LLM. Each message has:
+
+* a **role** (who is speaking)
+* and **content** (what they say)
+
+They are passed as a **list** to the LLM to simulate dialogue and context.
+
+---
+
+## 🧱 Core Message Types
+
+### 1. **system**
+
+> 🧠 *“Set the behavior or personality of the AI”*
+
+* Used to define rules, tone, format, or restrictions for the assistant.
+* Not shown to users in UI (typically internal).
+
+✅ Example:
+
+```json
+{ "role": "system", "content": "You are a helpful assistant who replies in markdown." }
+```
+
+---
+
+### 2. **user**
+
+> 👤 *“Message from the human/user”*
+
+* The actual task, question, or prompt from the user.
+* Can be short or complex.
+
+✅ Example:
+
+```json
+{ "role": "user", "content": "Summarize the article on AI regulation." }
+```
+
+---
+
+### 3. **assistant (or ai in LangChain)**
+
+> 🤖 *“The model's response”*
+
+* What the LLM replies with.
+* Stored to maintain history or chain reasoning.
+
+✅ Example:
+
+```json
+{ "role": "assistant", "content": "Here is a summary of the article..." }
+```
+
+---
+
+## 🧪 Additional Message Types (Advanced / Framework-Specific)
+
+### 4. **tool (OpenAI + LangChain)**
+
+> 🛠️ *Model calls a tool function (e.g., calculator, search)*
+
+* Used when an AI uses an external tool.
+* Content contains the tool’s **name and input**.
+
+✅ Example:
+
+```json
+{ "role": "tool", "tool_call_id": "xyz", "content": "search('weather in Tokyo')" }
+```
+
+### 5. **function\_call (legacy, replaced by tools)**
+
+> 🧮 *Earlier way of doing tool use (still supported)*
+
+* Similar to tool calls, now part of `tool_calls`.
+
+---
+
+## 🧠 Why Different Message Roles Matter
+
+| Role        | Purpose                                 | Required? |
+| ----------- | --------------------------------------- | --------- |
+| `system`    | Set context, rules, behavior            | Optional  |
+| `user`      | Provide prompts, questions              | ✅ Yes     |
+| `assistant` | Track previous responses from the model | Optional  |
+| `tool`      | Trigger a tool/agent behavior           | Optional  |
+
+**Without role separation**, models can’t reason about who said what — especially in long chats.
+
+---
+
+## 🧰 Example: Full Chat History in OpenAI Format
+
+````python
+[
+  {"role": "system", "content": "You are a coding assistant."},
+  {"role": "user", "content": "Write a Python function to reverse a string."},
+  {"role": "assistant", "content": "Sure! Here's the code:\n```python\ndef reverse(s): return s[::-1]```"},
+  {"role": "user", "content": "Now explain it line by line."}
+]
+````
+
+---
+
+## 🌐 How This Is Used in LangChain
+
+LangChain uses:
+
+* `SystemMessage(content="...")`
+* `HumanMessage(content="...")`
+* `AIMessage(content="...")`
+
+Or via chat models like:
+
+```python
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+chat = ChatOpenAI()
+
+messages = [
+    SystemMessage(content="You are a poetic assistant."),
+    HumanMessage(content="Write a poem about the ocean.")
+]
+
+response = chat.invoke(messages)
+```
+
+---
+
+## 🧩 Key Use Cases
+
+| Use Case             | Recommended Role Setup                             |
+| -------------------- | -------------------------------------------------- |
+| Chat assistant       | system + user + assistant                          |
+| Tool calling (agent) | system + user + assistant + tool                   |
+| Persona simulation   | system sets identity (e.g., “You are Elon Musk”)   |
+| Context retention    | Use all roles to simulate full conversation memory |
+
+---
+
+Would you like a visual chart or interactive notebook example on this?
+
+
+
+
+########################## Projects ##########################################
+@@ User will be asked some queries based on multiple documents where the queries will be like from which documents is belonging this queries
+Embedding-> file name is embedding_based_first_project.py
+Prompts->  Multiple Project withing prompts folder
